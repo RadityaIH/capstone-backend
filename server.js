@@ -19,3 +19,6 @@ app.use(express.json());
 app.get("/", (req, res) => {
     res.json({ message: "awkoawkowaw 🫵😂" });
 });
+
+const firestoreRoutes = require('./app/routes/firestore.routes.js');
+firestoreRoutes(app);

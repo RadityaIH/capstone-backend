@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "semaroam-capstone",
+  "private_key_id": "b88fce3dc5a22f4e6ea9d6d58fd769c03fb6ca1d",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC33MZrkkWPpl9t\nQEzkXbAeZxBx/Kdb8sq0C3y6k0ZKUogdNWZo70RGYCV+lWdQ+s1bqsS2DpZk/BE7\n9CIQNPMDD2Mkg/WCIc/Qs/eWinnRtrQDt4ibAOyHahaEvdW1Z+7AhgVlr+OpgGPM\nfA1bBz6yQd6P9SghXuv6IkqQpk3eHOFWyhku1TMYBdacJ6bOmEnzF4YbKQGJZbFd\ngNTeqj3WF6ZTJolsDR2uNlUbS121q/fX7KXnz5ZvW195cbSghIiOIt3ixUFZeevb\nSyHn5p380Oj0F8M6OrCBS95L30weDjoUxYKnx4ZSPKwU7ERqXLC5x7SnsXxf3SPB\n9zxsQ1LNAgMBAAECggEAAcl+kDsau/u0/73ZQXr7pEACM+ltwwIIIFngO3wE+eH1\nerszJJ/2vOxgUOuo1muppVNymAZqRc8BZ+DGl/u7xPLYVtmFgF9NwsyNAoSUDIrH\nEyYsiL0oj2RjlaS2uA2rj2l+Ee/0uYgK8EjgZFscq+TiAeozGqfuiT7eFKvZI+iF\nt7AmTnWLWkY7VM8+HRdLz6qfHKaEUAcChrt4mDnkQ66ZW1Q6jziRHr2/vPZNqML1\nJu7N5I6m7lu2I6qSiwqkYPeFqMShSZFE77DnW0peUMypc+4pqVAs7ekyBGmH00Z4\nu7Ub0UlUgwzACc5AzixoOOzKmBmZ5IFmjJFBZuYWLQKBgQDuboLGmIA8lnfwQIte\no9z1y/t+Rw75dhkqgxK/Itj1gXO6ak7/via1VK2Pw49d+PWGSpawusxUxsw8S76c\nUz2VfU5rXHun2tXkEvR/uEDCs3NQEy3N+JitXhHTHP1WRNupoIcN4SPlOR9nxU3o\n+dzQUjMnfjngkcA9d5ocWIkZvwKBgQDFaO9P7meGdA6pQUHjj9d/+R7uzWs6F5cN\n/WUcr/eqj8WqB40771s3//d/h/GaCNKcMiAs5HRkN18c/5lKSmO3V5nsLcG9lbnu\netbQugGk9v0LLW0i4T8NJmRFNkxdNenR46EbzQKODo9dzuYMf6+Kq349OxJWPINb\np0cItK++cwKBgHlF8HJ+4sruZbbnvXu3sQ28YQDLt8wey5IZ9REO8nd9DpYEuIXP\n+/RDS7xR5bwQgyF5Esh1WrTMINmSVTNCC5Lbl2V4NtUbs6s8EOxdlWLyz3YtKyEW\njuGvdTWCC0Ez6N6QbeEbYJyYv2aSrpwPasby6F3wEBQvTi51hQdh6OoVAoGBAJE3\nuiOgisNbiJV1jdSqsapQRjMBJYncZKBD8SeDQrtTe+KyH3EhiIbPYu+Lv2zCZLvG\nG+kqPXyjRvJ8C/Wcd3IdnPsiRc0C4X3PG0r8Kc2Ca27XgdsQu2MfBM/tO4ut500h\nGBjtXJ3HlCs70fsLysRFl13PoJOTfEXl7dk3obiFAoGBANtrWs422tkmJdNzW4Xw\nPgdp3dJWYywB9wt1z/q0zv9yTynidf22Lu7pxBWoB/Jag5Qj8SkUqNXjNYwQ0+aE\n5IzrLo1LxjYKIfHJjVOTY8nF1DsEB7gnGK1WP+/I0Z0ehm3Th11XxVNH29s9oLQO\nbiVZj6ssldwQ0twMqH1uB+D7\n-----END PRIVATE KEY-----\n",
+  "client_email": "access-firestore@semaroam-capstone.iam.gserviceaccount.com",
+  "client_id": "104267142048566150670",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/access-firestore%40semaroam-capstone.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
