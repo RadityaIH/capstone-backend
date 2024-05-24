@@ -1,7 +1,7 @@
 const { Firestore } = require('@google-cloud/firestore');
 const db = new Firestore({
     projectId: 'semaroam-capstone',
-    keyFilename: './app/controllers/firestoreKey.json'
+    keyFilename: 'firestoreKey.json'
 });
 
 checkDuplicateUsername = (req, res, next) => {

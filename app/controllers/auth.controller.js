@@ -1,9 +1,10 @@
-const config = require("../config/auth.config.js");
 const storeFirestore = require('../controllers/firestore.controller');
 const { Firestore } = require('@google-cloud/firestore');
+const dotenv = require('dotenv');
+dotenv.config();
 const db = new Firestore({
     projectId: 'semaroam-capstone',
-    keyFilename: './app/controllers/firestoreKey.json'
+    keyFilename: 'firestoreKey.json'
 });
 
 const jwt = require("jsonwebtoken");
@@ -54,7 +55,7 @@ exports.signin = (req, res) => {
                     });
                 }
 
-                const token = jwt.sign({ id: user.id }, config.secret, {
+                const token = jwt.sign({ id: user.id }, process.env.SECRET, {
                     expiresIn: 86400 // 24 hours
                 });
 
