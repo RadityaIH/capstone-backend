@@ -1,6 +1,10 @@
 const express = require('express');
 const cors = require("cors");
 
+// routes
+const firestoreRoutes = require('./app/routes/firestore.routes.js');
+const authRoutes = require('./app/routes/auth.routes.js');
+
 const app = express();
 const PORT = 3000;
 app.listen(PORT, () => {
@@ -20,5 +24,5 @@ app.get("/", (req, res) => {
     res.json({ message: "awkoawkowaw 🫵😂" });
 });
 
-const firestoreRoutes = require('./app/routes/firestore.routes.js');
 firestoreRoutes(app);
+authRoutes(app);
