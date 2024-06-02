@@ -6,13 +6,13 @@ const firestoreRoutes = require('./app/routes/firestore.routes.js');
 const authRoutes = require('./app/routes/auth.routes.js');
 
 const app = express();
-const PORT = 3000;
+const PORT = 8080;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
 
 var corsOptions = {
-    origin: "http://localhost:3000",
+    origin: "http://localhost:8080",
 };
 
 app.use(cors(corsOptions));
