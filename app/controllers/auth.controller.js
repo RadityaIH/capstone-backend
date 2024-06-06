@@ -1,12 +1,7 @@
 const storeFirestore = require('../controllers/firestore.controller');
-const { Firestore } = require('@google-cloud/firestore');
+const db = require('../config/db');
 const dotenv = require('dotenv');
 dotenv.config();
-
-const db = new Firestore({
-    projectId: 'semaroam-capstone',
-    keyFilename: process.env.FIRESTOREKEY
-});
 
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
