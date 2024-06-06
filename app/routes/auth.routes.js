@@ -10,8 +10,8 @@ module.exports = function (app) {
         next();
     });
 
-    app.post("/api/auth/signup", [verifySignUp.checkDuplicateUsername], authController.signup);
-    app.post("/api/auth/signin", authController.signin);
-    app.post("/api/auth/signout", authController.signout);
+    app.post("/signup", [verifySignUp.checkDuplicateUsername], authController.signup);
+    app.post("/signin", authController.signin);
+    app.post("/signout", authController.signout);
 
 };

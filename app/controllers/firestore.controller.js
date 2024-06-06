@@ -1,7 +1,9 @@
 const { Firestore } = require('@google-cloud/firestore');
 const path = require('path');
+const dotenv = require('dotenv');
+dotenv.config();
 
-const servicePath = path.resolve('firestoreKey.json')
+const servicePath = process.env.FIRESTOREKEY
 
 const db = new Firestore({
     projectId: 'semaroam-capstone',
