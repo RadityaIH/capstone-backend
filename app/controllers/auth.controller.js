@@ -16,12 +16,14 @@ exports.signup = (req, res) => {
     const { username, password, nama } = req.body;
 
     const id = crypto.randomBytes(16).toString("hex");
+    const createdAt = new Date().toISOString();
 
     const user = {
         id: id,
         nama: nama,
         username: username,
-        password: bcrypt.hashSync(password, 8)
+        password: bcrypt.hashSync(password, 8),
+        createdAt: createdAt
     };
 
     storeFirestore.add(user);
@@ -65,7 +67,8 @@ exports.signin = (req, res) => {
                     data: {
                         id: user.id,
                         nama: user.nama,
-                        username: user.username
+                        username: user.username,
+                        createdAt: user.createdAt
                     },
                     accessToken: token
                 });
