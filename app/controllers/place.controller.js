@@ -105,6 +105,10 @@ exports.getPlaceByKeyword = (req, res) => {
                 }
             });
 
+            if (places.length === 0) {
+                return res.status(404).send({ message: "Places Not found." });
+            }
+            
             res.status(200).send({
                 message: "Places were found successfully!",
                 data: places
