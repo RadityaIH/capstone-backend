@@ -5,6 +5,7 @@ const cors = require("cors");
 const firestoreRoutes = require('./app/routes/firestore.routes.js');
 const authRoutes = require('./app/routes/auth.routes.js');
 const userRoutes = require('./app/routes/user.routes.js');
+const placeRoutes = require('./app/routes/place.routes.js');
 
 const app = express();
 const PORT = 8080;
@@ -28,3 +29,4 @@ app.get("/", (req, res) => {
 firestoreRoutes(app);
 authRoutes(app);
 userRoutes(app);
+placeRoutes(app);
