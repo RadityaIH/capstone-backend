@@ -92,7 +92,7 @@ exports.getPlaceByKeyword = (req, res) => {
     db.collection('Places').get()
         .then(snapshot => {
             if (snapshot.empty) {
-                return res.status(404).send({ message: "Places Not found." });
+                return res.status(404).send({ message: "Places Not found.", total_data: 0});
             }
 
             const places = [];
@@ -106,11 +106,12 @@ exports.getPlaceByKeyword = (req, res) => {
             });
 
             if (places.length === 0) {
-                return res.status(404).send({ message: "Places Not found." });
+                return res.status(404).send({ message: "Places Not found.", total_data: 0});
             }
             
             res.status(200).send({
                 message: "Places were found successfully!",
+                total_data: places.length,
                 data: places
             });
         })
@@ -128,7 +129,7 @@ exports.getPlaceByCategory = (req, res) => {
     db.collection('Places').get()
         .then(snapshot => {
             if (snapshot.empty) {
-                return res.status(404).send({ message: "Places Not found." });
+                return res.status(404).send({ message: "Places Not found.", total_data: 0});
             }
 
             const places = [];
@@ -142,11 +143,12 @@ exports.getPlaceByCategory = (req, res) => {
             });
 
             if (places.length === 0) {
-                return res.status(404).send({ message: "Places Not found." });
+                return res.status(404).send({ message: "Places Not found.", total_data: 0});
             }
 
             res.status(200).send({
                 message: "Places were found successfully!",
+                total_data: places.length,
                 data: places
             });
         })
