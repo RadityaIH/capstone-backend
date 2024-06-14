@@ -118,3 +118,39 @@ exports.getPlaceByKeyword = (req, res) => {
             res.status(500).send({ message: err.message });
         });
 }
+
+// get place by category
+exports.getPlaceByCategory = (req, res) => {
+    const category = req.params.category;
+
+    const cat = category.toLowerCase().replace(/\s/g, '');
+
+    db.collection('Places').get()
+        .then(snapshot => {
+            if (snapshot.empty) {
+                return res.status(404).send({ message: "Places Not found." });
+            }
+
+            const places = [];
+            snapshot.forEach(doc => {
+                const place = doc.data();
+                const placeCategory = place.Category.toLowerCase().replace(/\s/g, '');
+
+                if (placeCategory.includes(cat)) {
+                    places.push(place);
+                }
+            });
+
+            if (places.length === 0) {
+                return res.status(404).send({ message: "Places Not found." });
+            }
+
+            res.status(200).send({
+                message: "Places were found successfully!",
+                data: places
+            });
+        })
+        .catch(err => {
+            res.status(500).send({ message: err.message });
+        });
+}
