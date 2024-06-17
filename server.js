@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require("cors");
+const loadModel = require('./app/config/loadModel.js');
 
 // routes
 const firestoreRoutes = require('./app/routes/firestore.routes.js');
@@ -25,6 +26,9 @@ app.use(express.json());
 app.get("/", (req, res) => {
     res.json({ message: "awkoawkowaw 🫵😂" });
 });
+
+const model = loadModel();
+app.model = model;
 
 firestoreRoutes(app);
 authRoutes(app);

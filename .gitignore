@@ -2,3 +2,4 @@
 package-lock.json
 firestoreKey.json
 .env
+/app/models
