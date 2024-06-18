@@ -64,25 +64,25 @@ exports.getAllPlaces = (req, res) => {
 }
 
 // get place by id
-exports.getPlace = (req, res) => {
-    const id = req.params.id;
+// exports.getPlace = (req, res) => {
+//     const id = req.params.id;
 
-    db.collection('Places').doc(id).get()
-        .then(doc => {
-            if (!doc.exists) {
-                return res.status(404).send({ message: "Place Not found." });
-            }
+//     db.collection('Places').doc(id).get()
+//         .then(doc => {
+//             if (!doc.exists) {
+//                 return res.status(404).send({ message: "Place Not found." });
+//             }
 
-            const place = doc.data();
-            res.status(200).send({
-                message: "Place was found successfully!",
-                data: place
-            });
-        })
-        .catch(err => {
-            res.status(500).send({ message: err.message });
-        });
-}
+//             const place = doc.data();
+//             res.status(200).send({
+//                 message: "Place was found successfully!",
+//                 data: place
+//             });
+//         })
+//         .catch(err => {
+//             res.status(500).send({ message: err.message });
+//         });
+// }
 
 // get place by keyword
 exports.getPlaceByKeyword = (req, res) => {
@@ -261,7 +261,7 @@ exports.recommend = async (req, res) => {
         res.status(200).send({
             message: 'Recommendations retrieved successfully!',
             data_req: placeData,
-            total_data: recommendations.length,
+            total_data_recommendation: recommendations.length,
             data: recommendations
         });
     } catch (error) {
