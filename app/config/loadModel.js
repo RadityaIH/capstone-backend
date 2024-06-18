@@ -4,9 +4,10 @@ dotenv.config();
 
 
 const loadModel = async () => {
+    console.log('Loading Model...')
     const modelPath = process.env.MODEL_URL;
     const model = await tf.loadGraphModel(modelPath);
-    console.log('Model loaded');
+    console.log('Model loaded successfully!');
     return model;
 }
 

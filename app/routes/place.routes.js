@@ -15,5 +15,5 @@ module.exports = function (app) {
     app.get("/place/:id", placeController.getPlace);
     app.get("/place/keyword/:keyword", placeController.getPlaceByKeyword);
     app.get("/place/category/:category", placeController.getPlaceByCategory);
-    app.get("/place/recommendation/:id", placeController.predictRecommendation);
+    app.get("/place/recommendation/:id", placeController.recommend);
 };

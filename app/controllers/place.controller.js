@@ -1,5 +1,6 @@
 const db = require('../config/db');
-const model = require('../config/loadModel');
+const loadModel = require('../config/loadModel');
+const tf = require('@tensorflow/tfjs-node');
 
 // post all places json to firestore
 exports.addPlaces = (req, res) => {
@@ -192,69 +193,92 @@ exports.getPlaceByCategory = (req, res) => {
 //     });
 // }
 
-let dataset = [];
-let tfidf_matrix = [];
 
-// Memuat dataset dari Firestore dan menginisialisasi vectorizer
-const loadDataset = async () => {
-    const snapshot = await db.collection('Places').get();
-    dataset = snapshot.docs.map(doc => ({ id: doc.Place_Id, ...doc.data() }));
-
-    const descriptions = dataset.map(doc => doc.Description);
-    const vectorizer = new tf.layers.experimental.preprocessing.TextVectorization();
-    const data = tf.data.array(descriptions);
-    await vectorizer.adapt(data);
-
-    const sequences = descriptions.map(desc => vectorizer.apply(tf.tensor([desc])).arraySync()[0]);
-    const vocabSize = vectorizer.computeVocabularySize();
-    tfidf_matrix = sequences.map(seq => {
-        const termCounts = tf.tensor1d(seq).arraySync();
-        const tfidfVector = termCounts.map(count => count / seq.length * Math.log(vocabSize / (1 + count)));
-        return tf.tensor1d(tfidfVector);
-    });
-};
-
-// Fungsi untuk menghitung cosine similarity
-const cosineSimilarity = (vecA, vecB) => {
-    const dotProduct = tf.dot(vecA, vecB).arraySync();
-    const normA = vecA.norm().arraySync();
-    const normB = vecB.norm().arraySync();
-    return dotProduct / (normA * normB);
-};
-
-// Fungsi rekomendasi
-const recommend = (doc_id, num_recommendations = 5) => {
-    const simScores = tfidf_matrix.map((vec, i) => {
-        return [i, cosineSimilarity(tfidf_matrix[doc_id], vec)];
-    });
-
-    simScores.sort((a, b) => b[1] - a[1]);
-    const recommendations = simScores.slice(1, num_recommendations + 1);
-    return recommendations.map(([i, score]) => ({
-        doc_id: dataset[i].id,
-        place_name: dataset[i].Place_Name,
-        description: dataset[i].Description,
-        image: dataset[i].Image,
-        score: score
-    }));
-};
-
-exports.predictRecommendation = async (req, res) => {
-    const placeId = req.params.id;
+exports.recommend = async (req, res) => {
+    const id = req.params.id;
 
     try {
-        const placeIndex = dataset.findIndex(doc => doc.id === placeId);
-        if (placeIndex === -1) {
-            return res.status(404).send({ message: "Place Not found." });
+        const model = await loadModel();
+
+        // Fetch all places from Firestore
+        const placesSnapshot = await db.collection('Places').get();
+        if (placesSnapshot.empty) {
+            return res.status(404).send({ message: 'No places found.' });
         }
 
-        const recommendations = recommend(placeIndex);
+        const places = [];
+        let selectedPlace = null;
+        placesSnapshot.forEach(doc => {
+            const place = { id: doc.id, ...doc.data() };
+            if (place.id === id) {
+                selectedPlace = place;
+            }
+            places.push(place);
+        });
+
+        if (!selectedPlace) {
+            return res.status(404).send({ message: 'Selected place not found.' });
+        }
+
+        // Prepare the input tensor for the model
+        const id_docs = places.map(place => place.Place_Id);
+
+        // Check if all id_docs are strings
+        if (!id_docs.every(doc => typeof doc === 'string')) {
+            return res.status(400).send({ message: 'Invalid Place_Id format.' });
+        }
+
+        // Example: Assuming you're using a tokenizer or other preprocessing step to convert id_docs to a tensor
+        const paddedID = padID(id_docs, 768); // Example function to pad id_docs
+
+        const inputTensor = tf.tensor(paddedID).reshape([-1, 768, 1]); // Adjust shape to match model
+
+        // Find the index of the selected place
+        const placeIndex = places.findIndex(place => place.id === id);
+
+        // Get predictions from the model
+        const predictions = model.predict(inputTensor).dataSync();
+
+        // Get the top 5 recommendations excluding the place itself
+        const simScores = Array.from(predictions).map((score, index) => ({ index, score }));
+        simScores.sort((a, b) => b.score - a.score);
+
+        const recommendations = simScores
+            .filter(sim => sim.index !== placeIndex)
+            .slice(0, 5)
+            .map(({ index, score }) => ({
+                doc_id: places[index].id,
+                place_name: places[index].Place_Name,
+                description: places[index].Description,
+                image: places[index].Image,
+                score
+            }));
 
         res.status(200).send({
-            message: "Prediction was done successfully!",
+            message: 'Recommendations retrieved successfully!',
+            total_data: recommendations.length,
             data: recommendations
         });
-    } catch (err) {
-        res.status(500).send({ message: err.message });
+    } catch (error) {
+        res.status(500).send({ message: error.message });
+    }
+};
+
+// Example function to pad id_docs (adjust as per your actual preprocessing needs)
+function padID(id_docs, maxLength) {
+    return id_docs.map(doc => padToMaxLength(doc, maxLength));
+}
+
+function padToMaxLength(str, maxLength) {
+    if (typeof str !== 'string') {
+        console.error('Expected a string but received:', typeof str);
+        return Array(maxLength).fill(0); // Return a padded array of zeros if input is not a string
+    }
+    
+    const arr = str.split('').map(char => char.charCodeAt(0)); // Example: converting string to array of char codes
+    if (arr.length >= maxLength) {
+        return arr.slice(0, maxLength);
+    } else {
+        return [...arr, ...Array(maxLength - arr.length).fill(0)]; // Example padding with zeros
     }
 }
