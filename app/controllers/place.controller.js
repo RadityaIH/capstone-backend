@@ -223,10 +223,10 @@ exports.recommend = async (req, res) => {
         // Prepare the input tensor for the model
         const id_docs = places.map(place => place.Place_Id);
 
-        // Check if all id_docs are strings
-        if (!id_docs.every(doc => typeof doc === 'string')) {
-            return res.status(400).send({ message: 'Invalid Place_Id format.' });
-        }
+        // // Check if all id_docs are strings
+        // if (!id_docs.every(doc => typeof doc === 'string')) {
+        //     return res.status(400).send({ message: 'Invalid Place_Id format.' });
+        // }
 
         // Example: Assuming you're using a tokenizer or other preprocessing step to convert id_docs to a tensor
         const paddedID = padID(id_docs, 768); // Example function to pad id_docs
@@ -254,8 +254,13 @@ exports.recommend = async (req, res) => {
                 score
             }));
 
+        //data id from params
+        const dataReq = await db.collection('Places').doc(id).get();
+        const placeData = dataReq.data();
+
         res.status(200).send({
             message: 'Recommendations retrieved successfully!',
+            data_req: placeData,
             total_data: recommendations.length,
             data: recommendations
         });
@@ -271,7 +276,7 @@ function padID(id_docs, maxLength) {
 
 function padToMaxLength(str, maxLength) {
     if (typeof str !== 'string') {
-        console.error('Expected a string but received:', typeof str);
+        // console.error('Expected a string but received:', typeof str);
         return Array(maxLength).fill(0); // Return a padded array of zeros if input is not a string
     }
     
