@@ -247,11 +247,14 @@ exports.recommend = async (req, res) => {
             .filter(sim => sim.index !== placeIndex)
             .slice(0, 5)
             .map(({ index, score }) => ({
-                doc_id: places[index].id,
-                place_name: places[index].Place_Name,
-                description: places[index].Description,
-                image: places[index].Image,
-                score
+                Place_Id: places[index].id,
+                Place_Name: places[index].Place_Name,
+                Description: places[index].Description,
+                Image: places[index].Image,
+                City: places[index].City,
+                Category: places[index].Category,
+                Place_Ratings: places[index].Place_Ratings,
+                Score: score
             }));
 
         //data id from params
