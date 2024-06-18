@@ -27,10 +27,17 @@ app.get("/", (req, res) => {
     res.json({ message: "awkoawkowaw 🫵😂" });
 });
 
-const model = loadModel();
-app.model = model;
+// Load the model before starting the server
+loadModel().then(model => {
+    app.locals.model = model;
 
-firestoreRoutes(app);
-authRoutes(app);
-userRoutes(app);
-placeRoutes(app);
+    // Initialize routes
+    firestoreRoutes(app);
+    authRoutes(app);
+    userRoutes(app);
+    placeRoutes(app);
+
+}).catch(error => {
+    console.error("Error loading model:", error);
+    process.exit(1); // Exit if model loading fails
+});

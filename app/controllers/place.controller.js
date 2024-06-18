@@ -1,5 +1,6 @@
 const db = require('../config/db');
-const model = require('../config/loadModel');
+const loadModel = require('../config/loadModel');
+const tf = require('@tensorflow/tfjs-node');
 
 // post all places json to firestore
 exports.addPlaces = (req, res) => {
@@ -110,7 +111,7 @@ exports.getPlaceByKeyword = (req, res) => {
             if (places.length === 0) {
                 return res.status(404).send({ message: "Places Not found.", total_data: 0});
             }
-            
+
             res.status(200).send({
                 message: "Places were found successfully!",
                 total_data: places.length,
@@ -159,102 +160,32 @@ exports.getPlaceByCategory = (req, res) => {
         });
 }
 
-
-// endpoint predict recommendation on click detail place
-// exports.predictRecommendation = async (req, res) => {
-//     const placeId = req.params.id;
-
-//     const models = await model.loadModel();
-//     const placeDoc = await db.collection('Places').doc(placeId).get()
-//         .then(doc => {
-//             if (!doc.exists) {
-//                 return res.status(404).send({ message: "Place Not found." });
-//             }
-
-//             return doc.data();
-//         })
-//         .catch(err => {
-//             return res.status(500).send({ message: err.message });
-//         });
-
-//     // predict based on Description
-//     const place = placeDoc.data();
-//     const features = place.Description;
-
-//     const inputTensor = tf.tensor2d([features]);
-
-//     const prediction = models.predict(inputTensor).dataSync();
-    
-
-//     res.status(200).send({
-//         message: "Prediction was done successfully!",
-//         data: prediction
-//     });
-// }
-
-let dataset = [];
-let tfidf_matrix = [];
-
-// Memuat dataset dari Firestore dan menginisialisasi vectorizer
-const loadDataset = async () => {
-    const snapshot = await db.collection('Places').get();
-    dataset = snapshot.docs.map(doc => ({ id: doc.Place_Id, ...doc.data() }));
-
-    const descriptions = dataset.map(doc => doc.Description);
-    const vectorizer = new tf.layers.experimental.preprocessing.TextVectorization();
-    const data = tf.data.array(descriptions);
-    await vectorizer.adapt(data);
-
-    const sequences = descriptions.map(desc => vectorizer.apply(tf.tensor([desc])).arraySync()[0]);
-    const vocabSize = vectorizer.computeVocabularySize();
-    tfidf_matrix = sequences.map(seq => {
-        const termCounts = tf.tensor1d(seq).arraySync();
-        const tfidfVector = termCounts.map(count => count / seq.length * Math.log(vocabSize / (1 + count)));
-        return tf.tensor1d(tfidfVector);
-    });
-};
-
-// Fungsi untuk menghitung cosine similarity
-const cosineSimilarity = (vecA, vecB) => {
-    const dotProduct = tf.dot(vecA, vecB).arraySync();
-    const normA = vecA.norm().arraySync();
-    const normB = vecB.norm().arraySync();
-    return dotProduct / (normA * normB);
-};
-
-// Fungsi rekomendasi
-const recommend = (doc_id, num_recommendations = 5) => {
-    const simScores = tfidf_matrix.map((vec, i) => {
-        return [i, cosineSimilarity(tfidf_matrix[doc_id], vec)];
-    });
-
-    simScores.sort((a, b) => b[1] - a[1]);
-    const recommendations = simScores.slice(1, num_recommendations + 1);
-    return recommendations.map(([i, score]) => ({
-        doc_id: dataset[i].id,
-        place_name: dataset[i].Place_Name,
-        description: dataset[i].Description,
-        image: dataset[i].Image,
-        score: score
-    }));
-};
-
+// predict recommendation based on location
 exports.predictRecommendation = async (req, res) => {
-    const placeId = req.params.id;
+    const id = req.params.id;
+    const num_recommendations = req.query.num_recommendations || 5;
 
     try {
-        const placeIndex = dataset.findIndex(doc => doc.id === placeId);
-        if (placeIndex === -1) {
+        const model = await loadModel();
+        
+        //find description of place by id
+        const doc = await db.collection('Places').doc(id).get();
+        if (!doc.exists) {
             return res.status(404).send({ message: "Place Not found." });
         }
 
-        const recommendations = recommend(placeIndex);
+        const place = doc.data();
+        console.log(place.Place_Name)
+        const inputTensor = tf.tensor3d([[[place.Place_Id]]]);
+        const prediction = model.predict(inputTensor);
+
+        const predictionData = await prediction.array();
 
         res.status(200).send({
-            message: "Prediction was done successfully!",
-            data: recommendations
+            message: "Prediction completed successfully!",
+            data: predictionData,
         });
-    } catch (err) {
-        res.status(500).send({ message: err.message });
+    } catch (error) {
+        res.status(500).send({ message: error.message });
     }
 }
