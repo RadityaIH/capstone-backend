@@ -11,4 +11,10 @@ const loadModel = async () => {
     return model;
 }
 
+// const loadModel = async () => {
+//     const model = await tf.loadLayersModel(process.env.MODEL_URL);
+//     console.log('Model loaded');
+//     return model;
+// }
+
 module.exports = loadModel;
