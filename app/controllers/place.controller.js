@@ -200,51 +200,42 @@ exports.recommend = async (req, res) => {
     try {
         const model = await loadModel();
 
-        // Fetch all places from Firestore
+        // Fetch the selected place from Firestore
+        const doc = await db.collection('Places').doc(id).get();
+        if (!doc.exists) {
+            return res.status(404).send({ message: 'Selected place not found.' });
+        }
+
+        const selectedPlace = { id: doc.id, ...doc.data() };
+
+        // Prepare the input tensor for the model using the selected place's ID
+        const paddedID = padID([selectedPlace.id], 768); // Example function to pad id_docs
+        const inputTensor = tf.tensor(paddedID).reshape([-1, 768, 1]); // Adjust shape to match model
+
+        // Get predictions from the model
+        const predictions = model.predict(inputTensor).dataSync();
+        console.log('Predictions:', predictions);
+
+        // Fetch all places to get their information for recommendations
         const placesSnapshot = await db.collection('Places').get();
         if (placesSnapshot.empty) {
             return res.status(404).send({ message: 'No places found.' });
         }
 
         const places = [];
-        let selectedPlace = null;
         placesSnapshot.forEach(doc => {
-            const place = { id: doc.id, ...doc.data() };
-            if (place.id === id) {
-                selectedPlace = place;
-            }
-            places.push(place);
+            places.push({ id: doc.id, ...doc.data() });
         });
-
-        if (!selectedPlace) {
-            return res.status(404).send({ message: 'Selected place not found.' });
-        }
-
-        // Prepare the input tensor for the model
-        const id_docs = places.map(place => place.Place_Id);
-
-        // // Check if all id_docs are strings
-        // if (!id_docs.every(doc => typeof doc === 'string')) {
-        //     return res.status(400).send({ message: 'Invalid Place_Id format.' });
-        // }
-
-        // Example: Assuming you're using a tokenizer or other preprocessing step to convert id_docs to a tensor
-        const paddedID = padID(id_docs, 768); // Example function to pad id_docs
-
-        const inputTensor = tf.tensor(paddedID).reshape([-1, 768, 1]); // Adjust shape to match model
 
         // Find the index of the selected place
         const placeIndex = places.findIndex(place => place.id === id);
-
-        // Get predictions from the model
-        const predictions = model.predict(inputTensor).dataSync();
 
         // Get the top 5 recommendations excluding the place itself
         const simScores = Array.from(predictions).map((score, index) => ({ index, score }));
         simScores.sort((a, b) => b.score - a.score);
 
         const recommendations = simScores
-            .filter(sim => sim.index !== placeIndex)
+            .filter(sim => sim.index !== placeIndex) // Ensure the selected place is excluded
             .slice(0, 5)
             .map(({ index, score }) => ({
                 Place_Id: places[index].id,
@@ -257,13 +248,11 @@ exports.recommend = async (req, res) => {
                 Score: score
             }));
 
-        //data id from params
-        const dataReq = await db.collection('Places').doc(id).get();
-        const placeData = dataReq.data();
+        console.log('Recommendations:', recommendations);
 
         res.status(200).send({
             message: 'Recommendations retrieved successfully!',
-            data_req: placeData,
+            data_req: selectedPlace,
             total_data_recommendation: recommendations.length,
             data: recommendations
         });
@@ -279,7 +268,7 @@ function padID(id_docs, maxLength) {
 
 function padToMaxLength(str, maxLength) {
     if (typeof str !== 'string') {
-        // console.error('Expected a string but received:', typeof str);
+        console.error('Expected a string but received:', typeof str);
         return Array(maxLength).fill(0); // Return a padded array of zeros if input is not a string
     }
     
