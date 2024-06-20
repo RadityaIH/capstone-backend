@@ -25,7 +25,7 @@
 ```
 - Go to local server
 ```bash
-  http://localhost:8000/
+  http://localhost:8080/
 ```
 
 ## 🔗 Links
