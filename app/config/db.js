@@ -4,7 +4,7 @@ dotenv.config();
 
 const db = new Firestore({
     projectId: 'semaroam-capstone',
-    keyFilename: process.env.FIRESTOREKEY
+    // keyFilename: process.env.FIRESTOREKEY
 });
 
 module.exports = db;
