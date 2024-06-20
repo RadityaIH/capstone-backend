@@ -24,7 +24,7 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 app.get("/", (req, res) => {
-    res.json({ message: "awkoawkowaw 🫵😂" });
+    res.json({ message: "Selamat Datang di API Semaroam" });
 });
 
 // Load the model before starting the server
