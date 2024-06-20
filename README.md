@@ -1,4 +1,4 @@
-# capstone-backend
+# Semaroam-backend
 ## Backend Architecture
 ![Alt text](app/image/CloudArch.png?raw=true "Cloud Architecture")
 
