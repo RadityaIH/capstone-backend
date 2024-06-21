@@ -86,6 +86,88 @@ exports.getAllPlaces = (req, res) => {
 //         });
 // }
 
+// exports.recommend = async (req, res) => {
+//     const id = req.params.id;
+
+//     try {
+//         const model = await loadModel();
+
+//         // Ambil tempat yang dipilih dari Firestore
+//         const doc = await db.collection('Places').doc(id).get();
+//         if (!doc.exists) {
+//             return res.status(404).send({ message: 'Selected place not found.' });
+//         }
+
+//         const selectedPlace = { id: doc.id, ...doc.data() };
+//         console.log('Selected Place:', selectedPlace);
+
+//         // Persiapkan tensor input untuk model menggunakan deskripsi tempat yang dipilih
+//         const description = selectedPlace.Description;
+//         const paddedDescription = padDescription(description, 768); // Fungsi contoh untuk padding deskripsi
+//         const inputTensor = tf.tensor2d([paddedDescription]).reshape([1, 768, 1]); // Sesuaikan bentuk agar sesuai dengan model
+
+//         console.log('Original Description:', description);
+//         console.log('Padded Description:', paddedDescription);
+//         console.log('Input Tensor:', inputTensor);
+
+//         // Dapatkan prediksi dari model secara asinkron
+//         const predictions = await model.predict(inputTensor).data();
+//         console.log('Predictions:', predictions);
+
+//         // Ambil semua tempat untuk mendapatkan informasi mereka untuk rekomendasi
+//         const placesSnapshot = await db.collection('Places').get();
+//         if (placesSnapshot.empty) {
+//             return res.status(404).send({ message: 'No places found.' });
+//         }
+
+//         const places = [];
+//         placesSnapshot.forEach(doc => {
+//             places.push({ id: doc.id, ...doc.data() });
+//         });
+
+//         // Temukan indeks tempat yang dipilih
+//         const placeIndex = places.findIndex(place => place.id === id);
+
+//         // Dapatkan 5 rekomendasi teratas tidak termasuk tempat itu sendiri
+//         const simScores = Array.from(predictions).map((score, index) => ({ index, score }));
+//         simScores.sort((a, b) => b.score - a.score);
+
+//         const recommendations = simScores
+//             .filter(sim => sim.index !== placeIndex) // Pastikan tempat yang dipilih dikecualikan
+//             .slice(0, 5)
+//             .map(({ index, score }) => ({
+//                 Place_Id: places[index].id,
+//                 Place_Name: places[index].Place_Name,
+//                 Description: places[index].Description,
+//                 Image: places[index].Image,
+//                 City: places[index].City,
+//                 Category: places[index].Category,
+//                 Place_Ratings: places[index].Place_Ratings,
+//                 Score: score
+//             }));
+
+//         console.log('Recommendations:', recommendations);
+
+//         res.status(200).send({
+//             message: 'Recommendations retrieved successfully!',
+//             data_req: selectedPlace,
+//             total_data_recommendation: recommendations.length,
+//             data: recommendations
+//         });
+//     } catch (error) {
+//         res.status(500).send({ message: error.message });
+//     }
+// };
+
+// // Fungsi contoh untuk padding deskripsi (sesuaikan sesuai kebutuhan preprocessing Anda)
+// function padDescription(description, maxLength) {
+//     // const arr = description.split('').map(char => char.charCodeAt(0)); // Contoh: mengkonversi string ke array kode karakter
+//     const arr = description.split(' ').map(word => word.length); // Contoh: menghitung panjang kata
+//     const padding = Array(maxLength - arr.length).fill(0);
+//     return arr.concat(padding);
+// }
+
+
 // get place by keyword
 exports.getPlaceByKeyword = (req, res) => {
     const keyword = req.params.keyword;
